@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "spbu_hw_csharp", "spbu_hw_csharp\spbu_hw_csharp.csproj", "{E7379B40-92E6-4643-B0F7-F96A9B958283}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "hw1", "hw1", "{4072545E-52EA-4BCA-8F49-E500CEFA611B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Task1", "Task1\Task1.csproj", "{1DFF0386-BD17-47A3-83BE-607F5ED7F329}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTask1", "TestTask1\TestTask1.csproj", "{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E7379B40-92E6-4643-B0F7-F96A9B958283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7379B40-92E6-4643-B0F7-F96A9B958283}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7379B40-92E6-4643-B0F7-F96A9B958283}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7379B40-92E6-4643-B0F7-F96A9B958283}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DFF0386-BD17-47A3-83BE-607F5ED7F329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DFF0386-BD17-47A3-83BE-607F5ED7F329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DFF0386-BD17-47A3-83BE-607F5ED7F329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DFF0386-BD17-47A3-83BE-607F5ED7F329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1DFF0386-BD17-47A3-83BE-607F5ED7F329} = {4072545E-52EA-4BCA-8F49-E500CEFA611B}
+		{FE7E63AB-99B7-4205-ACB5-7C5CDD50EADF} = {4072545E-52EA-4BCA-8F49-E500CEFA611B}
+	EndGlobalSection
+EndGlobal
