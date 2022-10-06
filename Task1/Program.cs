@@ -45,7 +45,7 @@ public class Program
         }
     }
 
-    public static void Main(string[] args)
+    public static void Main()
     {
         Console.WriteLine("Input an array like 1 2 5 6 32");
 

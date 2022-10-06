@@ -7,4 +7,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\spbu_hw_csharp\spbu_hw_csharp.csproj" />
+    </ItemGroup>
+
 </Project>
