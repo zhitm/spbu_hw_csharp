@@ -47,8 +47,8 @@ public class Tests
         var ans2 = await client2.Get("../../../TestFiles/big.txt");
         Assert.Multiple(() =>
         {
-            Assert.That(ans1.Item1, Is.EqualTo(3528));
-            Assert.That(ans2.Item1, Is.EqualTo(3528));
+            Assert.That(ans1.Item1, Is.EqualTo(ans2.Item1));
+            Assert.That(ans1.Item1, !Is.EqualTo(0));
             Assert.That(ans1.Item2, Is.EquivalentTo(ans2.Item2));
         });
     }
