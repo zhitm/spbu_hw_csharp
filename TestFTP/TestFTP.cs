@@ -39,7 +39,7 @@ public class Tests
     }
 
     [Test]
-    public async Task TestParallel()
+    public async Task TestParallelAccess()
     {
         var client1 = new Client(ip, port);
         var client2 = new Client(ip, port);
