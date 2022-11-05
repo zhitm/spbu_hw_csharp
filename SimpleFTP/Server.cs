@@ -66,11 +66,10 @@ public class Server
         await streamWriter.FlushAsync();
     }
 
-    public async Task StartListen()
+    public async Task StartListen(CancellationTokenSource cts)
     {
         var tcpListener = new TcpListener(_address, _port);
         tcpListener.Start();
-        var cts = new CancellationToken();
         while (!cts.IsCancellationRequested)
         {
             using var socket = tcpListener.AcceptSocket();
@@ -88,13 +87,13 @@ public class Server
             if (msgType == "list")
             {
                 Console.WriteLine("list");
-                await Task.Run(() => List(newtworkStream, strings[1]), cts);
+                await Task.Run(() => List(newtworkStream, strings[1]));
             }
 
             if (msgType == "get")
             {
                 Console.WriteLine("get");
-                await Task.Run(() => Get(newtworkStream, strings[1]), cts);
+                await Task.Run(() => Get(newtworkStream, strings[1]));
             }
         }
         

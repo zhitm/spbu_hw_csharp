@@ -1,16 +1,31 @@
-﻿using System;
-using System.Dynamic;
-using System.Net;
+﻿using System.Net;
+using static System.Console;
 
 namespace SimpleFTP;
 
 public class Program
 {
-    public static async Task Main()
+    public static async Task Main(string[] args)
     {
-        var server = new Server(IPAddress.Parse("127.0.0.1"), 2390);
-        // var cts = new CancellationToken();
-        await server.StartListen();
-        
+        if (args.Length != 2)
+        {
+            WriteLine("Command line should contain as args only server ip and port");
+            return;
+        }
+
+        if (!IPAddress.TryParse(args[0], out IPAddress? ip))
+        {
+            WriteLine("Incorrect ip");
+            return;
+        }
+
+        if (!int.TryParse(args[1], out int port))
+        {
+            WriteLine("Incorrect ip");
+            return;
+        }
+        var server = new Server(ip, port);
+        var cts = new CancellationTokenSource();
+        await server.StartListen(cts);
     }
 }

@@ -5,25 +5,20 @@ namespace SimpleFTP;
 
 public class Client
 {
-    private readonly IPAddress _address;
-    private readonly int _port;
-    
-    private readonly IPAddress _ServerAddress;
-    private readonly int _ServerPort;
+    private readonly IPAddress _serverAddress;
+    private readonly int _serverPort;
 
-    public Client(IPAddress address, int port, IPAddress serverAddress, int serverPort)
+    public Client(IPAddress serverAddress, int serverPort)
     {
-        _address = address;
-        _port = port;
-        _ServerAddress = serverAddress;
-        _ServerPort = serverPort;
+        _serverAddress = serverAddress;
+        _serverPort = serverPort;
     }
     
     
      public async Task<(int, List<(string, bool)>)> List(string pathToDirectory)
     {
         var client = new TcpClient();
-        await client.ConnectAsync(_ServerAddress, _ServerPort);
+        await client.ConnectAsync(_serverAddress, _serverPort);
         
         using var stream = client.GetStream();
         using var streamWriter = new StreamWriter(stream);
@@ -62,9 +57,9 @@ public class Client
     public async Task<(int, byte[])> Get(string pathToFile)
     {
         var client = new TcpClient();
-        await client.ConnectAsync(_address, _port);
-        using var stream = client.GetStream();
-        using var streamWriter = new StreamWriter(stream);
+        await client.ConnectAsync(_serverAddress, _serverPort);
+        await using var stream = client.GetStream();
+        await using var streamWriter = new StreamWriter(stream);
         await streamWriter.WriteLineAsync($"get {pathToFile}");
         await streamWriter.FlushAsync();
         using var streamReader = new StreamReader(stream);
