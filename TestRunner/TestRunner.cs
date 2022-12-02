@@ -9,9 +9,9 @@ public class TestRunner
 
     private void LoadTests(string path)
     {
-        Assembly assembly =
-            Assembly.LoadFrom(path);
-        foreach (var type in assembly.ExportedTypes)
+        var types = Directory.EnumerateFiles(path, "*.dll", 0).Select(Assembly.LoadFrom)
+            .SelectMany(assembly => assembly.ExportedTypes);
+        foreach (var type in types)
         {
             if (!type.IsClass) continue;
             var newTestingClass = new TestingClass(type);
@@ -36,10 +36,7 @@ public class TestRunner
     public void ExecuteTests(string path)
     {
         LoadTests(path);
-        foreach (var testingClass in _testingClasses)
-        {
-            testingClass.RunTests();
-        }
+        Parallel.ForEach(_testingClasses, testingClass => testingClass.RunTests());
     }
 
     private static Attribute GetTestAttribute(MemberInfo methodInfo)
@@ -51,6 +48,7 @@ public class TestRunner
                 return attr;
             }
         }
+
         throw new Exception("This method hasn't this attr");
     }
 

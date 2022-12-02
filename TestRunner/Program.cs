@@ -1,12 +1,26 @@
 ﻿// See https://aka.ms/new-console-template for more information
+
 namespace TestRunner;
+
 public class Program
 {
-    public static void Main()
+    public static void Main(string[] args)
     {
-        var tester = new TestRunner();
-        tester.ExecuteTests("C:/Users/Maria/RiderProjects/spbu_hw_csharp/TestApp/obj/Debug/net6.0/TestApp.dll");
-    }
+        if (args.Length != 1)
+        {
+            Console.WriteLine("Please enter a path to dll as argument.");
+            return;
+        }
 
-   
+        var path = args[0];
+        var tester = new TestRunner();
+        if (Directory.Exists(path))
+        {
+            tester.ExecuteTests(path);
+        }
+        else
+        {
+            Console.WriteLine("It's not a path");
+        }
+    }
 }
