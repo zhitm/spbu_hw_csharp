@@ -1,4 +1,4 @@
-namespace TestRunner;
+namespace Attributes;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class MyTest : Attribute
@@ -15,10 +15,12 @@ public class MyTest : Attribute
     }
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public class Before : Attribute
 {
 }
 
+[AttributeUsage(AttributeTargets.Method)]
 public class After : Attribute
 {
 }

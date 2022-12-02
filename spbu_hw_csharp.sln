@@ -11,6 +11,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{2CC999A6-F8D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "TestApp\TestApp.csproj", "{EF6440EC-3FE0-4B86-BDB3-A4538E509E98}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Attributes", "Attributes", "{819827D9-6BD8-43D8-9E36-84129D8DAD8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Attributes", "Attributes\Attributes.csproj", "{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +26,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F0B76F88-D35A-4493-8E14-AA7734E60F34} = {AF933A6A-4DB7-44EB-A8F5-7088AD0A32EE}
 		{EF6440EC-3FE0-4B86-BDB3-A4538E509E98} = {2CC999A6-F8D8-4C37-BCCD-5BC30E7583B7}
+		{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6} = {819827D9-6BD8-43D8-9E36-84129D8DAD8B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F0B76F88-D35A-4493-8E14-AA7734E60F34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -32,5 +37,9 @@ Global
 		{EF6440EC-3FE0-4B86-BDB3-A4538E509E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF6440EC-3FE0-4B86-BDB3-A4538E509E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF6440EC-3FE0-4B86-BDB3-A4538E509E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D541C8C8-5F8D-4D9A-9D91-F75C98344FB6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -21,17 +21,39 @@ public class TestMethod
         _testName = methodInfo.Name;
     }
 
-    public object? Invoke()
+    public bool Invoke()
     {
         if (!_isIgnored)
         {
             if (_isExcepted)
             {
-                
+                try
+                {
+                    _methodInfo.Invoke(_classInstance, null);
+                    Console.WriteLine($"FAIL: Test {_testName}. Expected exception");
+                    return false;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"PASS: Test {_testName}. Exception message: {e.Message}");
+                    return true;
+                }
             }
-            return _methodInfo.Invoke(_classInstance, null);
+
+            try
+            {
+                _methodInfo.Invoke(_classInstance, null);
+                Console.WriteLine($"PASS: Test {_testName}");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"FAIL: Test {_testName} fails. Exception message: {e.Message}");
+                return false;
+            }
         }
-        Console.WriteLine($"Test {_testName} is ignored: {_ignore}");
-        return null;
+
+        Console.WriteLine($"IGNORE: Test {_testName} is ignored: {_ignore}");
+        return true;
     }
 }

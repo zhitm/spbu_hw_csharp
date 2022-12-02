@@ -1,71 +1,70 @@
 using System.Reflection;
+using Attributes;
 
 namespace TestRunner;
 
 public class TestRunner
 {
-    
-    private readonly List<TestMethod> _methods = new List<TestMethod>();
+    private readonly List<TestingClass> _testingClasses = new();
 
-    private void FindTests(string path)
+    private void LoadTests(string path)
     {
         Assembly assembly =
             Assembly.LoadFrom(path);
         foreach (var type in assembly.ExportedTypes)
         {
             if (!type.IsClass) continue;
-            var tests = FindTestsInClass(type);
+            var newTestingClass = new TestingClass(type);
             var instance = Activator.CreateInstance(type);
+
+            _testingClasses.Add(newTestingClass);
+            newTestingClass.BeforeMethods = FindMethodsByAttrInClass(type, typeof(Before))
+                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance));
+            newTestingClass.AfterMethods = FindMethodsByAttrInClass(type, typeof(After))
+                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance));
+
+            var tests = FindMethodsByAttrInClass(type, typeof(MyTest));
             foreach (var test in tests)
             {
                 var attr = GetTestAttribute(test);
-                // Console.WriteLine(attr);
-                // _methods.Add(new TestMethod(test, instance));
+                var a = (MyTest)attr;
+                newTestingClass.TestMethods.Add(new TestMethod(test, instance, a.expected, a.ignore != "", a.ignore));
             }
         }
     }
 
     public void ExecuteTests(string path)
     {
-        FindTests(path);
-        foreach (var method in _methods)
+        LoadTests(path);
+        foreach (var testingClass in _testingClasses)
         {
-            Console.WriteLine(method.Invoke());
+            testingClass.RunTests();
         }
     }
 
-    private static Attribute GetTestAttribute(MethodInfo methodInfo)
+    private static Attribute GetTestAttribute(MemberInfo methodInfo)
     {
-        foreach (var data in methodInfo.GetCustomAttributesData())
-        {
-            Console.WriteLine(">>>>>>>>>>>>>");
-            foreach (var argument in data.NamedArguments)
-            {
-                Console.WriteLine(argument.MemberInfo);
-            }
-            Console.WriteLine(methodInfo.Name);
-        }
         foreach (var attr in methodInfo.GetCustomAttributes())
         {
-            if (attr.GetType().ToString() == typeof(MyTest).ToString()) return attr;
+            if (attr.GetType().ToString() == typeof(MyTest).ToString())
+            {
+                return attr;
+            }
         }
-
         throw new Exception("This method hasn't this attr");
     }
-    
-    private static bool HasTestAttr(MethodInfo methodInfo)
+
+    private static bool HasAttr(MethodInfo methodInfo, Type attrType)
     {
         return methodInfo.GetCustomAttributes()
-            .Any(attr => attr.GetType().ToString() == typeof(MyTest).ToString());
+            .Any(attr => attr.GetType().ToString() == attrType.ToString());
     }
 
-    private static bool IsTestIgnored(MethodInfo method) => false;
-
-    private static List<MethodInfo> FindTestsInClass(Type classType)
+    private static List<MethodInfo> FindMethodsByAttrInClass(Type classType, Type attrType)
     {
-        var tests = classType.GetMethods()
-            .Where(HasTestAttr)
+        var methodInfos = classType.GetMethods()
+            .Where(method => HasAttr(method, attrType))
             .ToList();
-        return tests;
+        return methodInfos;
     }
 }
