@@ -8,7 +8,7 @@ public class TestingClass
     public readonly List<TestMethod> TestMethods = new();
     public List<NonTestMethod> AfterMethods = new();
     private readonly string _className;
-    private volatile int _failedTests ;
+    private volatile int _failedTests;
     private volatile int _failedBefore;
     private volatile int _failedAfter;
 

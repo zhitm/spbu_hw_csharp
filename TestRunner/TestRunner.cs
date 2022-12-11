@@ -5,23 +5,29 @@ namespace TestRunner;
 
 public class TestRunner
 {
-    private readonly List<TestingClass> _testingClasses = new();
+    public bool HasTested;
+    public readonly List<TestingClass> TestingClasses = new();
 
     private void LoadTests(string path)
     {
         var types = Directory.EnumerateFiles(path, "*.dll", 0).Select(Assembly.LoadFrom)
             .SelectMany(assembly => assembly.ExportedTypes);
+        if (!types.Any())
+        {
+            Console.WriteLine("Nothing to test");
+        }
+
         foreach (var type in types)
         {
             if (!type.IsClass) continue;
             var newTestingClass = new TestingClass(type);
             var instance = Activator.CreateInstance(type);
 
-            _testingClasses.Add(newTestingClass);
+            TestingClasses.Add(newTestingClass);
             newTestingClass.BeforeMethods = FindMethodsByAttrInClass(type, typeof(Before))
-                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance));
+                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance, true));
             newTestingClass.AfterMethods = FindMethodsByAttrInClass(type, typeof(After))
-                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance));
+                .ConvertAll(methodInfo => new NonTestMethod(methodInfo, instance, false));
 
             var tests = FindMethodsByAttrInClass(type, typeof(MyTest));
             foreach (var test in tests)
@@ -35,8 +41,10 @@ public class TestRunner
 
     public void ExecuteTests(string path)
     {
+        if (!Directory.Exists(path)) return;
         LoadTests(path);
-        Parallel.ForEach(_testingClasses, testingClass => testingClass.RunTests());
+        Parallel.ForEach(TestingClasses, testingClass => testingClass.RunTests());
+        HasTested = true;
     }
 
     private static Attribute GetTestAttribute(MemberInfo methodInfo)
