@@ -1,7 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Text;
-
-namespace Task2;
+﻿namespace Task2;
 
 public class Program
 {

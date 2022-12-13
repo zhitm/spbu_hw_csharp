@@ -22,10 +22,10 @@ public class Tests
     }
 
     [Test]
-    // [TestCase("abcdsdfgdfhgdfgSgdf")]
-    // [TestCase("bdfghdhdfg")]
-    // [TestCase("agdfhdgjfggsetwe")]
-    // [TestCase("afghfhghfghdfghdrgwr")]
+    [TestCase("abcdsdfgdfhgdfgSgdf")]
+    [TestCase("bdfghdhdfg")]
+    [TestCase("agdfhdgjfggsetwe")]
+    [TestCase("afghfhghfghdfghdrgwr")]
     [TestCase("aergergerghegergerghhthd")]
     public void TestComposition(string str)
     {
