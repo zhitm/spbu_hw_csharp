@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using Optional;
 using ThreadPool.MyTask;
 
@@ -6,37 +7,60 @@ namespace ThreadPool;
 
 public class MyThreadPool : IDisposable
 {
-    private int _nThreads;
     private bool _isShutdown;
-    private List<Thread> _threads;
-    private BlockingCollection<Action> _queue;
-    private CancellationTokenSource _cancellationTokenSource;
-    private bool _isDisposed;
-    private readonly object _locker = new ();
+    private readonly List<Thread> _threads;
+    private readonly BlockingCollection<Action> _queue = new();
+    private CancellationTokenSource _cancellationTokenSource = new();
+    private bool _isDisposed = false;
+    private readonly object _locker = new();
 
     private void ThreadWork()
     {
-        foreach (var action in _queue)
+        while (!_cancellationTokenSource.IsCancellationRequested)
         {
-            action();
+            lock (_locker)
+            {
+                while (_queue.Count == 0 && !_cancellationTokenSource.IsCancellationRequested)
+                {
+                    //is waiting for adding element for queue or shutdown
+                    Monitor.Wait(_locker);
+                }
+
+                if (_queue.TryTake(out Action action))
+                {
+                    action();
+                }
+            }
         }
     }
-    
+
+    /// <summary>
+    /// Constructor.
+    /// </summary>
+    /// <typeparam name="threadsCount">Count of working threads</typeparam>
     public MyThreadPool(int threadsCount)
     {
-        _nThreads = threadsCount;
         _isShutdown = false;
-        _threads = new List<Thread>(_nThreads);
-        _queue = new BlockingCollection<Action>();
-        _cancellationTokenSource = new CancellationTokenSource();
-        
-        for (var i = 0; i < _nThreads; i++)
+        _threads = new List<Thread>(threadsCount);
+
+        for (var i = 0; i < threadsCount; i++)
         {
-            _threads.Add(new Thread(() => ThreadWork()));
+            _threads.Add(new Thread(ThreadWork));
             _threads[i].Start();
         }
     }
 
+    private void AddElementToQueue(Action action)
+    {
+        _queue.Add(action);
+        Monitor.Pulse(_locker);
+    }
+
+    /// <summary>
+    /// Method for returning a task to be accepted for execution.
+    /// </summary>
+    /// <typeparam name="TResult">Type of return value</typeparam>
+    /// <param name="func">Method</param>
     public MyTask<TResult> Submit<TResult>(Func<TResult> func)
     {
         var newTask = Option.None<MyTask<TResult>>();
@@ -49,17 +73,19 @@ public class MyThreadPool : IDisposable
                 {
                     var computation = new Computation<TResult>(func);
                     var action = () => computation.Compute();
-                    _queue.Add(action);
-                    newTask = new MyTask<TResult>(this, computation, _queue).Some<MyTask<TResult>>();
+                    AddElementToQueue(action);
+                    newTask = new MyTask<TResult>(this, computation).Some();
                 }
                 catch
                 {
+                    return newTask.ValueOr(() => throw new AggregateException("submit error"));
                 }
             }
         }
-        return newTask.ValueOr(()=>throw new Exception("task can't be created"));
+
+        return newTask.ValueOr(() => throw new AggregateException("task can't be created"));
     }
-    
+
 
     public void Dispose()
     {
@@ -78,17 +104,21 @@ public class MyThreadPool : IDisposable
             _isDisposed = true;
         }
     }
+
+    /// <summary>
+    /// Method for shutting down threads
+    /// </summary>
     public void Shutdown()
     {
         lock (_locker)
         {
             if (!_isShutdown)
             {
-                foreach (var threadItem in _threads)
-                {
-                    threadItem.Join();
-                }
+                _cancellationTokenSource.Cancel();
+                _queue.CompleteAdding();
                 _isShutdown = true;
+                //pulse all waiting threads so all threads will end work
+                Monitor.PulseAll(_locker);
             }
         }
     }

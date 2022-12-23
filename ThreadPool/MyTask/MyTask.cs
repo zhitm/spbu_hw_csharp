@@ -1,31 +1,26 @@
-using System.Collections.Concurrent;
-
 namespace ThreadPool.MyTask;
 
 public class MyTask<TResult> : IMyTask<TResult>
 {
     private readonly Computation<TResult> _computation;
     private readonly MyThreadPool _threadPool;
-    public TResult Result { get {
-        return GetThisTaskResult();
-    } }
-    private BlockingCollection<Action> _queue;
+    public TResult Result => GetThisTaskResult();
 
-    public MyTask(MyThreadPool threadPool, Computation<TResult> computation, BlockingCollection<Action> queue)
+    public MyTask(MyThreadPool threadPool, Computation<TResult> computation)
     {
         _computation = computation;
         _threadPool = threadPool;
-        _queue = queue;
     }
 
     public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> continuation)
     {
-        var newFunc = () =>
+        TNewResult NewFunc()
         {
             var result = GetThisTaskResult();
             return continuation.Invoke(result);
-        };
-        return _threadPool.Submit(newFunc);
+        }
+
+        return _threadPool.Submit(NewFunc);
     }
 
     private TResult GetThisTaskResult()
@@ -35,6 +30,8 @@ public class MyTask<TResult> : IMyTask<TResult>
             _computation.Compute();
         }
 
-        return _computation.Result();
+        if (!_computation.IsException) return _computation.Result().Invoke();
+        throw new AggregateException(_computation.ExceptionMsg);
+        // return _computation.Result();
     }
 }

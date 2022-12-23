@@ -1,4 +1,5 @@
 using Optional;
+using Optional.Unsafe;
 
 namespace ThreadPool;
 
@@ -9,28 +10,27 @@ public class Computation<TResult>
 
     private Option<Func<TResult>> _result = Option.None<Func<TResult>>();
 
-    // private readonly Action _action;
     private bool _funcIsComputed;
 
-    public bool IsComputed
-    {
-        get { return _funcIsComputed; }
+    public bool IsException;
+    public string ExceptionMsg;
+    public bool IsComputed => _funcIsComputed;
 
-    }
 
-    public TResult Result()
+    public Func<TResult> Result()
     {
-        if (_result.HasValue) return _func.Invoke();
         Compute();
-        return _func.Invoke();
+        return _result.ValueOrDefault();
     }
 
     public Computation(Func<TResult> func)
     {
         _func = func;
-        // _action = action;
     }
 
+    /// <summary>
+    /// Return method returns result of function invoke
+    /// </summary>
     public void Compute()
     {
         lock (_locker)
@@ -39,12 +39,16 @@ public class Computation<TResult>
             {
                 try
                 {
-                    var newResultFunc = () => _func.Invoke();
-                    _result = (newResultFunc).Some();
+                    TResult NewResultFunc() => _func.Invoke();
+                    NewResultFunc();
+                    _result = ((Func<TResult>?)NewResultFunc).Some();
                 }
                 catch (Exception exceptionResult)
                 {
-                    var newExceptionFunc = new Func<TResult>(() => throw exceptionResult);
+                    IsException = true;
+                    ExceptionMsg = exceptionResult.Message;
+                    var newExceptionFunc =
+                        new Func<TResult>(() => throw new AggregateException(exceptionResult.Message));
                     _result = newExceptionFunc.Some();
                 }
                 finally
