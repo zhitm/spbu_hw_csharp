@@ -6,7 +6,7 @@ namespace ThreadPool;
 public class Computation<TResult>
 {
     private readonly Func<TResult> _func;
-    private readonly object _locker = new();
+    public readonly object Locker = new();
 
     private Option<Func<TResult>> _result = Option.None<Func<TResult>>();
 
@@ -19,7 +19,7 @@ public class Computation<TResult>
 
     public Func<TResult> Result()
     {
-        Compute();
+        // Compute();
         return _result.ValueOrDefault();
     }
 
@@ -33,13 +33,14 @@ public class Computation<TResult>
     /// </summary>
     public void Compute()
     {
-        lock (_locker)
+        lock (Locker)
         {
             if (!_funcIsComputed)
             {
                 try
                 {
-                    TResult NewResultFunc() => _func.Invoke();
+                    TResult result = _func.Invoke();
+                    TResult NewResultFunc() => result;
                     NewResultFunc();
                     _result = ((Func<TResult>?)NewResultFunc).Some();
                 }
@@ -54,6 +55,7 @@ public class Computation<TResult>
                 finally
                 {
                     _funcIsComputed = true;
+                    Monitor.Pulse(Locker);
                 }
             }
         }

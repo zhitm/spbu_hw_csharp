@@ -25,13 +25,16 @@ public class MyTask<TResult> : IMyTask<TResult>
 
     private TResult GetThisTaskResult()
     {
-        if (!_computation.IsComputed)
+        lock (_computation.Locker)
         {
-            _computation.Compute();
-        }
+            if (!_computation.IsComputed)
+            {
+                Monitor.Wait(_computation.Locker);
+                // _computation.Compute();
+            }
 
-        if (!_computation.IsException) return _computation.Result().Invoke();
-        throw new AggregateException(_computation.ExceptionMsg);
-        // return _computation.Result();
+            if (!_computation.IsException) return _computation.Result().Invoke();
+            throw new AggregateException(_computation.ExceptionMsg);
+        }
     }
 }
