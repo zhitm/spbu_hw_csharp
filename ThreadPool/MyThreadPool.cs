@@ -1,16 +1,14 @@
 using System.Collections.Concurrent;
 using Optional;
-using ThreadPool.MyTask;
 
 namespace ThreadPool;
 
-public class MyThreadPool : IDisposable
+public partial class MyThreadPool : IDisposable
 {
     private bool _isShutdown;
-    private readonly List<Thread> _threads;
     private readonly BlockingCollection<Action> _queue = new();
-    private CancellationTokenSource _cancellationTokenSource = new();
-    private bool _isDisposed = false;
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private bool _isDisposed;
     private readonly object _locker = new();
 
     private void ThreadWork()
@@ -40,12 +38,12 @@ public class MyThreadPool : IDisposable
     public MyThreadPool(int threadsCount)
     {
         _isShutdown = false;
-        _threads = new List<Thread>(threadsCount);
+        var threads = new List<Thread>(threadsCount);
 
         for (var i = 0; i < threadsCount; i++)
         {
-            _threads.Add(new Thread(ThreadWork));
-            _threads[i].Start();
+            threads.Add(new Thread(ThreadWork));
+            threads[i].Start();
         }
     }
 

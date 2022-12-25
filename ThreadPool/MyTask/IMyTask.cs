@@ -1,4 +1,4 @@
-namespace ThreadPool.MyTask;
+namespace ThreadPool;
 
 public interface IMyTask<out TResult>
 {

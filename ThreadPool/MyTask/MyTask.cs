@@ -1,40 +1,42 @@
-namespace ThreadPool.MyTask;
+namespace ThreadPool;
 
-public class MyTask<TResult> : IMyTask<TResult>
+partial class MyThreadPool
 {
-    private readonly Computation<TResult> _computation;
-    private readonly MyThreadPool _threadPool;
-    public TResult Result => GetThisTaskResult();
-
-    public MyTask(MyThreadPool threadPool, Computation<TResult> computation)
+    public class MyTask<TResult> : IMyTask<TResult>
     {
-        _computation = computation;
-        _threadPool = threadPool;
-    }
+        private readonly Computation<TResult> _computation;
+        private readonly MyThreadPool _threadPool;
+        public TResult Result => GetThisTaskResult();
 
-    public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> continuation)
-    {
-        TNewResult NewFunc()
+        public MyTask(MyThreadPool threadPool, Computation<TResult> computation)
         {
-            var result = GetThisTaskResult();
-            return continuation.Invoke(result);
+            _computation = computation;
+            _threadPool = threadPool;
         }
 
-        return _threadPool.Submit(NewFunc);
-    }
-
-    private TResult GetThisTaskResult()
-    {
-        lock (_computation.Locker)
+        public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> continuation)
         {
-            if (!_computation.IsComputed)
+            TNewResult NewFunc()
             {
-                Monitor.Wait(_computation.Locker);
-                // _computation.Compute();
+                var result = GetThisTaskResult();
+                return continuation.Invoke(result);
             }
 
-            if (!_computation.IsException) return _computation.Result().Invoke();
-            throw new AggregateException(_computation.ExceptionMsg);
+            return _threadPool.Submit(NewFunc);
+        }
+
+        private TResult GetThisTaskResult()
+        {
+            lock (_computation.Locker)
+            {
+                if (!_computation.IsComputed)
+                {
+                    Monitor.Wait(_computation.Locker);
+                }
+
+                if (!_computation.IsException) return _computation.Result().Invoke();
+                throw new AggregateException(_computation.ExceptionMsg);
+            }
         }
     }
 }
