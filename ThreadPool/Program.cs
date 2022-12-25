@@ -4,7 +4,7 @@ class ThreadPoolMain
 {
     public static int Foo()
     {
-        Thread.Sleep(1000);
+        Thread.Sleep(100);
         Console.WriteLine("hi");
         return 1;
     }

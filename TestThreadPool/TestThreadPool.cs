@@ -4,11 +4,6 @@ namespace TestThreadPool;
 
 public class Tests
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     [Test]
     public void TestContinueWith()
     {
@@ -51,6 +46,52 @@ public class Tests
         var task = pool.Submit(() => 1 / zero);
         int ReturnResult() => task.Result;
         Assert.Throws<AggregateException>(() => ReturnResult());
+        pool.Shutdown();
+    }
+
+    [Test]
+    public void TestRnd()
+    {
+        var pool = new MyThreadPool(10);
+        Random rnd = new Random();
+        var task = pool.Submit(() => rnd.Next(1, 1000000));
+        var result1 = task.Result;
+        var result2 = task.Result;
+        Assert.AreEqual(result1, result2);
+        pool.Shutdown();
+    }
+
+    [Test]
+    public void TestShutdown()
+    {
+        var pool = new MyThreadPool(10);
+        var task1 = pool.Submit(() => 2 * 3);
+        pool.Shutdown();
+        Assert.Throws<AggregateException>(() => pool.Submit(() => 2 * 3));
+    }
+
+
+    [Test]
+    public void TestManyTasks()
+    {
+        var pool = new MyThreadPool(10);
+
+        var listOfTasks = new List<MyThreadPool.MyTask<int>>();
+        for (int i = 0; i < 99; i++)
+        {
+            var index = i;
+            listOfTasks.Add(pool.Submit(() => index));
+        }
+
+        Assert.Multiple(() =>
+        {
+            for (int i = 0; i < 99; i++)
+            {
+                var index = i;
+                listOfTasks.Add(pool.Submit((() => index)));
+                Assert.AreEqual(i, listOfTasks[i].Result);
+            }
+        });
         pool.Shutdown();
     }
 }
