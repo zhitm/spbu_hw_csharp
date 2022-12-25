@@ -1,0 +1,43 @@
+﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Journal.Pages.FormModel
+@{
+    ViewData["Title"] = "Форма";
+}
+<h1>@ViewData["Title"]</h1>
+
+<p>Введите данные.</p>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <title>Register</title>
+</head>
+<body>
+<form method="post">
+    <p>
+        <label asp-for="Data.Name">Имя:</label>
+        <input asp-for="Data.Name"/>
+    </p>
+    <p>
+        <label asp-for="Data.Subject">Предмет:</label>
+        <input asp-for="Data.Subject"/>
+    </p>
+    <p>
+        <label asp-for="Data.Grade">Оценка:</label>
+        <input asp-for="Data.Grade"/>
+    </p>
+
+    <button type="submit">Отправить!</button>
+
+</form>
+
+</body>
+</html>
+
+@section Scripts
+{
+    <script src="/lib/jquery/dist/jquery.js"></script>
+    <script src="/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
+}

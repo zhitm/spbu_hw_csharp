@@ -1,0 +1,35 @@
+@page
+@model Journal.Pages.TableModel
+
+@{
+    ViewData["Title"] = "Просмотр оценок";
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width"/>
+    <title>ListParticipants</title>
+</head>
+<body>
+<h2>Выставленные оценки:</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Имя студента</th>
+        <th>Предмет</th>
+        <th>Оценка</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (Data p in Model.Participants)
+    {
+        <tr>
+            <td>@p.Name</td>
+            <td>@p.Subject</td>
+            <td>@p.Grade</td>
+        </tr>
+    }
+    </tbody>
+</table>
+</body>
+</html>
