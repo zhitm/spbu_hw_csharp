@@ -13,8 +13,8 @@ public class Tests
     public void TestContinueWith()
     {
         var pool = new MyThreadPool(4);
-        
-        var task1 = pool.Submit(() => 2*3);
+
+        var task1 = pool.Submit(() => 2 * 3);
         var task2 = task1.ContinueWith((x => 2 * x));
 
         Assert.Multiple((() =>
@@ -24,25 +24,25 @@ public class Tests
         }));
         pool.Shutdown();
     }
-    
-    
+
+
     [Test]
     public void TestCalculation()
     {
         var pool = new MyThreadPool(4);
-        
-        var task1 = pool.Submit(() => 2*3);
-        var task2 = pool.Submit(() => 2*4);
 
-        Assert.Multiple((() =>
+        var task1 = pool.Submit(() => 2 * 3);
+        var task2 = pool.Submit(() => 2 * 4);
+
+        Assert.Multiple(() =>
         {
             Assert.AreEqual(task1.Result, 6);
             Assert.AreEqual(task2.Result, 8);
-        }));
+        });
         pool.Shutdown();
     }
-    
-    
+
+
     [Test]
     public void ShouldAggregateExceptionWhenDivideByZero()
     {
